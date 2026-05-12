@@ -1,7 +1,9 @@
 package com.codecollab.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,9 +13,15 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI codeCollabOpenApi() {
         return new OpenAPI()
+            .components(new Components()
+                .addSecuritySchemes("bearerAuth", new SecurityScheme()
+                    .type(SecurityScheme.Type.HTTP)
+                    .scheme("bearer")
+                    .bearerFormat("JWT")
+                    .description("登录成功后复制 accessToken，在 Swagger 右上角 Authorize 中填写。")))
             .info(new Info()
                 .title("CodeCollab API")
                 .version("0.0.1")
-                .description("智能项目协作系统接口文档"));
+                .description("CodeCollab 智能项目协作系统接口文档，供前后端联调使用。"));
     }
 }

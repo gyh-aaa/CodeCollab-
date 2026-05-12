@@ -96,14 +96,17 @@ http://localhost:8080
 http://localhost:8080/swagger-ui.html
 ```
 
-如果本机暂时没有安装 Docker / MySQL，可以先使用演示配置启动：
+后端默认使用 `demo` 配置启动，不依赖 MySQL，适合你在 IDEA 里直接 Run，先跑通登录、工作台、项目列表和任务看板。
+
+如果要连接 MySQL 调试真实 RBAC 数据，请先启动基础设施，再指定 `mysql` 配置：
 
 ```bash
+docker compose up -d
 cd backend
-mvn spring-boot:run -Dspring-boot.run.profiles=demo
+mvn spring-boot:run "-Dspring-boot.run.profiles=mysql"
 ```
 
-`demo` 配置会跳过数据库自动配置，用于先跑通登录、工作台、项目列表和任务看板。
+IDEA 中可以在 Run Configuration 的 `Active profiles` 填 `mysql`。如果你的本机 MySQL 账号不是 `root/root`，请修改 [application-mysql.yml](E:/vue_project/VuePractice/backend/src/main/resources/application-mysql.yml)。
 
 Windows 下也可以直接运行：
 
@@ -133,12 +136,14 @@ http://localhost:5173
 
 ## 开发账号
 
-第一阶段使用临时内存账号，后续会替换为数据库用户模块。
+默认 `demo` 环境可使用内存账号：
 
 ```text
 用户名：admin
 密码：Admin@123456
 ```
+
+`mysql` 环境初始化脚本会写入 `admin`、`pm`、`member` 三个账号，密码统一为 `Admin@123456`。
 
 ## 阶段目标
 
@@ -151,4 +156,12 @@ http://localhost:5173
 - JWT 登录骨架
 - Vue 3 基础页面和路由
 
-下一阶段开始实现数据库版用户、角色、菜单和权限。
+第二阶段已经开始：
+
+- 数据库版用户登录
+- RBAC 角色权限查询
+- 菜单权限表
+- 当前用户菜单返回
+- 前端动态侧边栏
+
+详见：[第二阶段 RBAC 说明](E:/vue_project/VuePractice/docs/04-stage-2-rbac.md)

@@ -11,6 +11,7 @@ import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 import { useAuthStore } from '@/stores/auth'
+import type { MenuItem } from '@/types/auth'
 
 const route = useRoute()
 const router = useRouter()
@@ -18,6 +19,27 @@ const authStore = useAuthStore()
 
 const activeMenu = computed(() => route.path)
 const pageTitle = computed(() => String(route.meta.title || '工作台'))
+const fallbackMenus: MenuItem[] = [
+  { key: 'dashboard', title: '工作台', path: '/dashboard', icon: 'House', permission: 'dashboard:view' },
+  { key: 'projects', title: '项目', path: '/projects', icon: 'Folder', permission: 'project:read' },
+  { key: 'board', title: '任务看板', path: '/board', icon: 'Grid', permission: 'task:read' },
+  { key: 'notifications', title: '通知', path: '/notifications', icon: 'Bell', permission: 'notification:read' },
+]
+
+const iconMap = {
+  Bell,
+  Folder,
+  Grid,
+  House,
+}
+
+const menus = computed(() => {
+  return authStore.user?.menus?.length ? authStore.user.menus : fallbackMenus
+})
+
+function menuIcon(icon: string) {
+  return iconMap[icon as keyof typeof iconMap] || House
+}
 
 function handleSelect(path: string) {
   router.push(path)
@@ -41,21 +63,11 @@ function logout() {
       </div>
 
       <el-menu :default-active="activeMenu" class="side-menu" @select="handleSelect">
-        <el-menu-item index="/dashboard">
-          <el-icon><House /></el-icon>
-          <span>工作台</span>
-        </el-menu-item>
-        <el-menu-item index="/projects">
-          <el-icon><Folder /></el-icon>
-          <span>项目</span>
-        </el-menu-item>
-        <el-menu-item index="/board">
-          <el-icon><Grid /></el-icon>
-          <span>任务看板</span>
-        </el-menu-item>
-        <el-menu-item index="/notifications">
-          <el-icon><Bell /></el-icon>
-          <span>通知</span>
+        <el-menu-item v-for="item in menus" :key="item.key" :index="item.path">
+          <el-icon>
+            <component :is="menuIcon(item.icon)" />
+          </el-icon>
+          <span>{{ item.title }}</span>
         </el-menu-item>
       </el-menu>
     </el-aside>

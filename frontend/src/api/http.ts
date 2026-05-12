@@ -27,7 +27,9 @@ client.interceptors.response.use(
   (response) => {
     const payload = response.data as ApiEnvelope<unknown>
     if (payload.code !== 0) {
-      throw new Error(payload.message || '请求失败')
+      const message = payload.message || '请求失败'
+      ElMessage.error(message)
+      throw new Error(message)
     }
     return response
   },

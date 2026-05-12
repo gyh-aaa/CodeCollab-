@@ -50,6 +50,27 @@ CREATE TABLE IF NOT EXISTS sys_role_permission (
   PRIMARY KEY (role_id, permission_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE IF NOT EXISTS sys_menu (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT,
+  parent_id BIGINT NOT NULL DEFAULT 0,
+  menu_key VARCHAR(64) NOT NULL UNIQUE,
+  title VARCHAR(64) NOT NULL,
+  path VARCHAR(128) NOT NULL,
+  icon VARCHAR(64) NULL,
+  permission_code VARCHAR(128) NULL,
+  sort_order INT NOT NULL DEFAULT 0,
+  visible TINYINT NOT NULL DEFAULT 1,
+  status TINYINT NOT NULL DEFAULT 1,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS sys_role_menu (
+  role_id BIGINT NOT NULL,
+  menu_id BIGINT NOT NULL,
+  PRIMARY KEY (role_id, menu_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS organization (
   id BIGINT PRIMARY KEY AUTO_INCREMENT,
   name VARCHAR(128) NOT NULL,
@@ -181,3 +202,92 @@ CREATE TABLE IF NOT EXISTS operation_log (
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   INDEX idx_operation_biz (biz_type, biz_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+INSERT INTO sys_user (id, username, password_hash, nickname, email, status)
+VALUES
+  (1, 'admin', '{noop}Admin@123456', '系统管理员', 'admin@codecollab.local', 1),
+  (2, 'pm', '{noop}Admin@123456', '项目负责人', 'pm@codecollab.local', 1),
+  (3, 'member', '{noop}Admin@123456', '研发成员', 'member@codecollab.local', 1)
+ON DUPLICATE KEY UPDATE
+  nickname = VALUES(nickname),
+  email = VALUES(email),
+  status = VALUES(status);
+
+INSERT INTO sys_role (id, role_code, role_name, description, status)
+VALUES
+  (1, 'ADMIN', '系统管理员', '拥有系统全部权限', 1),
+  (2, 'PROJECT_MANAGER', '项目负责人', '可管理项目和任务', 1),
+  (3, 'MEMBER', '普通成员', '可查看项目并处理任务', 1)
+ON DUPLICATE KEY UPDATE
+  role_name = VALUES(role_name),
+  description = VALUES(description),
+  status = VALUES(status);
+
+INSERT INTO sys_permission (id, permission_code, permission_name, resource_type)
+VALUES
+  (1, '*:*:*', '全部权限', 'SYSTEM'),
+  (2, 'dashboard:view', '查看工作台', 'MENU'),
+  (3, 'project:read', '查看项目', 'API'),
+  (4, 'project:write', '管理项目', 'API'),
+  (5, 'task:read', '查看任务', 'API'),
+  (6, 'task:write', '管理任务', 'API'),
+  (7, 'notification:read', '查看通知', 'API')
+ON DUPLICATE KEY UPDATE
+  permission_name = VALUES(permission_name),
+  resource_type = VALUES(resource_type);
+
+INSERT INTO sys_menu (id, parent_id, menu_key, title, path, icon, permission_code, sort_order, visible, status)
+VALUES
+  (1, 0, 'dashboard', '工作台', '/dashboard', 'House', 'dashboard:view', 10, 1, 1),
+  (2, 0, 'projects', '项目', '/projects', 'Folder', 'project:read', 20, 1, 1),
+  (3, 0, 'board', '任务看板', '/board', 'Grid', 'task:read', 30, 1, 1),
+  (4, 0, 'notifications', '通知', '/notifications', 'Bell', 'notification:read', 40, 1, 1)
+ON DUPLICATE KEY UPDATE
+  title = VALUES(title),
+  path = VALUES(path),
+  icon = VALUES(icon),
+  permission_code = VALUES(permission_code),
+  sort_order = VALUES(sort_order),
+  visible = VALUES(visible),
+  status = VALUES(status);
+
+INSERT IGNORE INTO sys_user_role (user_id, role_id)
+VALUES
+  (1, 1),
+  (2, 2),
+  (3, 3);
+
+INSERT IGNORE INTO sys_role_permission (role_id, permission_id)
+VALUES
+  (1, 1),
+  (1, 2),
+  (1, 3),
+  (1, 4),
+  (1, 5),
+  (1, 6),
+  (1, 7),
+  (2, 2),
+  (2, 3),
+  (2, 4),
+  (2, 5),
+  (2, 6),
+  (2, 7),
+  (3, 2),
+  (3, 3),
+  (3, 5),
+  (3, 7);
+
+INSERT IGNORE INTO sys_role_menu (role_id, menu_id)
+VALUES
+  (1, 1),
+  (1, 2),
+  (1, 3),
+  (1, 4),
+  (2, 1),
+  (2, 2),
+  (2, 3),
+  (2, 4),
+  (3, 1),
+  (3, 2),
+  (3, 3),
+  (3, 4);

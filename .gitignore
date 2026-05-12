@@ -29,3 +29,6 @@ frontend/tsconfig.tsbuildinfo
 
 # Docker volumes
 .docker-data/
+
+# Local browser smoke-test profiles
+.chrome-test*/

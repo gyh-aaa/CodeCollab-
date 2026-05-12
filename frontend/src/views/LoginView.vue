@@ -33,6 +33,8 @@ async function submit() {
     await authStore.login(form)
     ElMessage.success('登录成功')
     router.replace(String(route.query.redirect || '/dashboard'))
+  } catch {
+    // 请求层已经弹出错误提示，这里只负责结束登录流程。
   } finally {
     loading.value = false
   }
