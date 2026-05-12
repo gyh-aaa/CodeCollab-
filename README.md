@@ -54,6 +54,14 @@ CodeCollab 是一个面向全栈工程师练习的 Vue 3 + Spring Boot 企业级
 
 ## 本地启动
 
+### 0. IDEA 导入方式
+
+推荐用 IDEA 打开项目根目录后，在 Maven 面板点击 Reload All Maven Projects。
+
+如果后端代码仍然大面积标红，右键 [pom.xml](E:/vue_project/VuePractice/pom.xml) 选择 `Add as Maven Project`，或者右键 [backend/pom.xml](E:/vue_project/VuePractice/backend/pom.xml) 选择 `Add as Maven Project`。
+
+项目 JDK 请选择 Java 21。
+
 ### 1. 启动基础设施
 
 当前机器还没有检测到 Docker。如果你安装 Docker Desktop 后，可以运行：
