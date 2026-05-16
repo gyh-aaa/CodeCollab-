@@ -134,16 +134,6 @@ scripts/start-frontend.cmd
 http://localhost:5173
 ```
 
-## 开发账号
-
-默认 `demo` 环境可使用内存账号：
-
-```text
-用户名：admin
-密码：Admin@123456
-```
-
-`mysql` 环境初始化脚本会写入 `admin`、`pm`、`member` 三个账号，密码统一为 `Admin@123456`。
 
 ## 阶段目标
 
