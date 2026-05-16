@@ -68,6 +68,13 @@ async function loadProjects() {
   }
 }
 
+function projectProgress(project: ProjectSummary) {
+  if (!project.totalTasks) {
+    return 0
+  }
+  return Math.round((project.completedTasks / project.totalTasks) * 100)
+}
+
 onMounted(loadProjects)
 </script>
 
@@ -112,7 +119,7 @@ onMounted(loadProjects)
         <el-table-column prop="ownerName" label="负责人" width="140" />
         <el-table-column label="进度" min-width="180">
           <template #default="{ row }">
-            <el-progress :percentage="Math.round((row.completedTasks / row.totalTasks) * 100)" />
+            <el-progress :percentage="projectProgress(row)" />
           </template>
         </el-table-column>
       </el-table>

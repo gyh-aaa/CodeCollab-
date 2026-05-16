@@ -291,3 +291,109 @@ VALUES
   (3, 2),
   (3, 3),
   (3, 4);
+
+INSERT INTO sys_permission (id, permission_code, permission_name, resource_type)
+VALUES
+  (8, 'organization:read', '查看组织', 'API'),
+  (9, 'organization:write', '管理组织', 'API')
+ON DUPLICATE KEY UPDATE
+  permission_name = VALUES(permission_name),
+  resource_type = VALUES(resource_type);
+
+INSERT INTO sys_menu (id, parent_id, menu_key, title, path, icon, permission_code, sort_order, visible, status)
+VALUES
+  (5, 0, 'organizations', '组织', '/organizations', 'OfficeBuilding', 'organization:read', 15, 1, 1)
+ON DUPLICATE KEY UPDATE
+  title = VALUES(title),
+  path = VALUES(path),
+  icon = VALUES(icon),
+  permission_code = VALUES(permission_code),
+  sort_order = VALUES(sort_order),
+  visible = VALUES(visible),
+  status = VALUES(status);
+
+INSERT IGNORE INTO sys_role_permission (role_id, permission_id)
+VALUES
+  (1, 8),
+  (1, 9),
+  (2, 8),
+  (2, 9),
+  (3, 8);
+
+INSERT IGNORE INTO sys_role_menu (role_id, menu_id)
+VALUES
+  (1, 5),
+  (2, 5),
+  (3, 5);
+
+INSERT INTO organization (id, name, description, owner_id, status)
+VALUES
+  (1, 'CodeCollab 产品组', '负责项目协作平台的研发与交付', 1, 'ACTIVE')
+ON DUPLICATE KEY UPDATE
+  name = VALUES(name),
+  description = VALUES(description),
+  owner_id = VALUES(owner_id),
+  status = VALUES(status);
+
+INSERT IGNORE INTO organization_member (id, organization_id, user_id, member_role)
+VALUES
+  (1, 1, 1, 'OWNER'),
+  (2, 1, 2, 'ADMIN'),
+  (3, 1, 3, 'MEMBER');
+
+INSERT INTO project (id, organization_id, name, code, description, owner_id, status, start_date, end_date)
+VALUES
+  (1, 1, '协作平台一期', 'CCP', '登录、权限和基础项目空间', 1, 'ACTIVE', '2026-05-11', '2026-06-10'),
+  (2, 1, '移动端体验优化', 'MOBILE', '优化小屏幕下的核心操作体验', 2, 'ACTIVE', '2026-05-14', '2026-06-16'),
+  (3, 1, '权限中心重构', 'AUTH', '拆分系统权限与业务权限边界', 1, 'PLANNING', '2026-05-20', '2026-06-30')
+ON DUPLICATE KEY UPDATE
+  name = VALUES(name),
+  description = VALUES(description),
+  owner_id = VALUES(owner_id),
+  status = VALUES(status),
+  start_date = VALUES(start_date),
+  end_date = VALUES(end_date);
+
+INSERT IGNORE INTO project_member (id, project_id, user_id, project_role)
+VALUES
+  (1, 1, 1, 'OWNER'),
+  (2, 1, 2, 'MANAGER'),
+  (3, 1, 3, 'DEVELOPER'),
+  (4, 2, 2, 'OWNER'),
+  (5, 2, 1, 'MANAGER'),
+  (6, 3, 1, 'OWNER');
+
+INSERT IGNORE INTO task (id, project_id, title, status, priority, assignee_id, reporter_id, due_date, sort_order)
+VALUES
+  (1, 1, '设计 RBAC 数据模型', 'TODO', 'HIGH', 1, 1, '2026-05-18 18:00:00', 10),
+  (2, 1, '梳理任务详情交互', 'TODO', 'MEDIUM', 2, 1, '2026-05-20 18:00:00', 20),
+  (3, 1, '搭建项目基础工程', 'DONE', 'HIGH', 3, 1, '2026-05-13 18:00:00', 30),
+  (4, 2, '移动端布局验收', 'IN_PROGRESS', 'MEDIUM', 2, 2, '2026-05-24 18:00:00', 10),
+  (5, 3, '项目级权限规则设计', 'TODO', 'HIGH', 1, 1, '2026-05-28 18:00:00', 10);
+INSERT INTO task_label (id, project_id, name, color)
+VALUES
+  (1, 1, '权限', '#7c3aed'),
+  (2, 1, '后端', '#2563eb'),
+  (3, 1, '前端', '#16a34a'),
+  (4, 1, '工程化', '#f59e0b'),
+  (5, 2, '移动端', '#0f766e'),
+  (6, 3, '权限', '#7c3aed')
+ON DUPLICATE KEY UPDATE
+  color = VALUES(color);
+
+INSERT IGNORE INTO task_label_rel (task_id, label_id)
+VALUES
+  (1, 1),
+  (1, 2),
+  (2, 3),
+  (3, 4),
+  (4, 5),
+  (5, 6);
+
+INSERT IGNORE INTO operation_log (id, operator_id, biz_type, biz_id, action, detail)
+VALUES
+  (1, 1, 'TASK', 1, 'CREATE_TASK', '创建任务：设计 RBAC 数据模型'),
+  (2, 1, 'TASK', 2, 'CREATE_TASK', '创建任务：梳理任务详情交互'),
+  (3, 1, 'TASK', 3, 'CHANGE_STATUS', 'IN_PROGRESS -> DONE'),
+  (4, 2, 'TASK', 4, 'CREATE_TASK', '创建任务：移动端布局验收'),
+  (5, 1, 'TASK', 5, 'CREATE_TASK', '创建任务：项目级权限规则设计');

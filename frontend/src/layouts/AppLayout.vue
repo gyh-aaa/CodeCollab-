@@ -5,6 +5,7 @@ import {
   Folder,
   Grid,
   House,
+  OfficeBuilding,
   SwitchButton,
 } from '@element-plus/icons-vue'
 import { computed } from 'vue'
@@ -21,6 +22,7 @@ const activeMenu = computed(() => route.path)
 const pageTitle = computed(() => String(route.meta.title || '工作台'))
 const fallbackMenus: MenuItem[] = [
   { key: 'dashboard', title: '工作台', path: '/dashboard', icon: 'House', permission: 'dashboard:view' },
+  { key: 'organizations', title: '组织', path: '/organizations', icon: 'OfficeBuilding', permission: 'organization:read' },
   { key: 'projects', title: '项目', path: '/projects', icon: 'Folder', permission: 'project:read' },
   { key: 'board', title: '任务看板', path: '/board', icon: 'Grid', permission: 'task:read' },
   { key: 'notifications', title: '通知', path: '/notifications', icon: 'Bell', permission: 'notification:read' },
@@ -31,10 +33,20 @@ const iconMap = {
   Folder,
   Grid,
   House,
+  OfficeBuilding,
 }
 
 const menus = computed(() => {
-  return authStore.user?.menus?.length ? authStore.user.menus : fallbackMenus
+  const source = authStore.user?.menus?.length ? authStore.user.menus : fallbackMenus
+  if (source.some((item) => item.key === 'organizations')) {
+    return source
+  }
+  const organizationsMenu = fallbackMenus.find((item) => item.key === 'organizations')!
+  const insertIndex = source.findIndex((item) => item.key === 'projects')
+  if (insertIndex === -1) {
+    return [...source, organizationsMenu]
+  }
+  return [...source.slice(0, insertIndex), organizationsMenu, ...source.slice(insertIndex)]
 })
 
 function menuIcon(icon: string) {

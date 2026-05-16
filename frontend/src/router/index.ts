@@ -23,10 +23,22 @@ const router = createRouter({
           meta: { title: '工作台' },
         },
         {
+          path: 'organizations',
+          name: 'organizations',
+          component: () => import('@/views/OrganizationsView.vue'),
+          meta: { title: '组织' },
+        },
+        {
           path: 'projects',
           name: 'projects',
           component: () => import('@/views/ProjectsView.vue'),
           meta: { title: '项目' },
+        },
+        {
+          path: 'projects/:id',
+          name: 'project-detail',
+          component: () => import('@/views/ProjectDetailView.vue'),
+          meta: { title: '项目详情' },
         },
         {
           path: 'board',
